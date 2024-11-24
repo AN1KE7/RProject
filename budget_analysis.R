@@ -1,10 +1,8 @@
-# Load required libraries
 library(tidyverse)
 library(ggplot2)
 library(scales)
 library(moments)
 
-# Read the CSV file
 budget_data <- read.csv("Cleaned_Union_Budget.csv")
 
 # 1. Data Description
@@ -27,6 +25,53 @@ numerical_summary <- summary(budget_data[,c(
   "budget_estimates2023_2024_total"
 )])
 print(numerical_summary)
+
+# Calculate mean 
+mean_stats <- data.frame(
+  Metric = c("Revenue 2021-22", "Capital 2021-22", "Total 2021-22"),
+  Mean = c(
+    mean(budget_data$actuals_2021_2022_revenue, na.rm = TRUE),
+    mean(budget_data$actuals_2021_2022_capital, na.rm = TRUE),
+    mean(budget_data$actuals_2021_2022_total, na.rm = TRUE)
+  )
+)
+print("Mean Statistics:")
+print(mean_stats)
+
+# Calculate median
+median_stats <- data.frame(
+  Metric = c("Revenue 2021-22", "Capital 2021-22", "Total 2021-22"),
+  Median = c(
+    median(budget_data$actuals_2021_2022_revenue, na.rm = TRUE),
+    median(budget_data$actuals_2021_2022_capital, na.rm = TRUE),
+    median(budget_data$actuals_2021_2022_total, na.rm = TRUE)
+  )
+)
+print("\nMedian Statistics:")
+print(median_stats)
+
+# Visualization comparing mean and median
+comparison_stats <- data.frame(
+  Metric = c("Revenue 2021-22", "Capital 2021-22", "Total 2021-22"),
+  Mean = mean_stats$Mean,
+  Median = median_stats$Median
+)
+
+# Reshape the data for plotting
+comparison_long <- tidyr::pivot_longer(comparison_stats, 
+                                     cols = c("Mean", "Median"),
+                                     names_to = "Statistic",
+                                     values_to = "Value")
+
+# Create a grouped bar plot
+ggplot(comparison_long, aes(x = Metric, y = Value, fill = Statistic)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  coord_flip() +
+  labs(title = "Comparison of Mean and Median Values",
+       x = "Metric",
+       y = "Value (in Crores)") +
+  scale_fill_manual(values = c("Mean" = "steelblue", "Median" = "darkred")) 
 
 # Calculate mode function
 get_mode <- function(v) {
