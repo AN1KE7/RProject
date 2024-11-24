@@ -74,10 +74,18 @@ ggplot(comparison_long, aes(x = Metric, y = Value, fill = Statistic)) +
   scale_fill_manual(values = c("Mean" = "steelblue", "Median" = "darkred")) 
 
 # Calculate mode function
-get_mode <- function(v) {
-  uniqv <- unique(v)
-  uniqv[which.max(tabulate(match(v, uniqv)))]
+get_modes <- function(v) {
+  uniqv <- unique(v)  # Get unique values
+  freq <- tabulate(match(v, uniqv))  # Tabulate the frequency of each value
+  uniqv[freq == max(freq)]  # Return all values with the maximum frequency
 }
+# Calculate all modes for the "actuals_2021_2022_revenue" column
+modes_revenue <- get_modes(budget_data$actuals_2021_2022_revenue)
+
+# Print the result
+print(paste("Modes of Actuals 2021-2022 Revenue:", paste(modes_revenue, collapse = ", ")))
+
+
 
 # Calculate IQR for revenue columns
 revenue_iqr <- IQR(budget_data$actuals_2021_2022_revenue, na.rm = TRUE)
